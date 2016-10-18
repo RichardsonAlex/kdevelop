@@ -33,7 +33,7 @@ include(KDEInstallDirs)
 include(KDECMakeSettings)
 
 set(QT_MIN_VERSION "5.4.0")
-find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED Widgets Concurrent Quick QuickWidgets WebKitWidgets Test)
+find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED Widgets Concurrent Quick QuickWidgets Test)
 set(KF5_DEP_VERSION "5.15.0") # we need KCrash::initialize
 find_package(KF5 ${KF5_DEP_VERSION} REQUIRED COMPONENTS
   Config
@@ -66,6 +66,11 @@ set_package_properties(KDevelop-PG-Qt PROPERTIES
 )
 
 find_package(KDevPlatform ${KDEVELOP_VERSION} REQUIRED)
+find_package(${KDEVPLATFORM_WEBVIEW_QT_MODULE} ${QT_MIN_VERSION} CONFIG REQUIRED)
+set_package_properties(${KDEVPLATFORM_WEBVIEW_QT_MODULE} PROPERTIES
+    PURPOSE "${KDEVPLATFORM_WEBVIEW_QT_MODULE} is required to render the QtHelp documentation view"
+)
+
 
 add_definitions(
     -DQT_DEPRECATED_WARNINGS
