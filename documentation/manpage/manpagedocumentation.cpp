@@ -20,12 +20,14 @@
 
 #include <QLabel>
 #include <KLocalizedString>
+#include <QDebug>
 #include <QTreeView>
 #include <QHeaderView>
 #include <QProgressBar>
 #include <QVBoxLayout>
 #include <QStackedWidget>
 #include <QStandardPaths>
+#include <QTextStream>
 
 #include "manpagedocumentation.h"
 #include "manpageplugin.h"
@@ -75,11 +77,23 @@ QWidget* ManPageDocumentation::documentationWidget(KDevelop::DocumentationFindWi
 
     // apply custom style-sheet to normalize look of the page
     const QString cssFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kdevmanpage/manpagedocumentation.css");
+    Q_ASSERT(!cssFile.isEmpty());
+#if HAVE_QTWEBKIT
     QWebSettings* settings = view->settings();
     settings->setUserStyleSheetUrl(QUrl::fromLocalFile(cssFile));
 
     view->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     QObject::connect(view, &KDevelop::StandardDocumentationView::linkClicked, ManPageDocumentation::s_provider->model(), &ManPageModel::showItemFromUrl);
+#else
+    QVariant data = view->loadResource(QTextDocument::StyleSheetResource, QUrl::fromLocalFile(cssFile));
+    QString cssString = QString::fromUtf8(data.toByteArray());
+    if (cssString.isEmpty()) {
+        qWarning() << "Failed to load" << cssFile;
+    }
+    view->document()->setDefaultStyleSheet(cssString);
+    // TODO: links?
+    QObject::connect(view, &KDevelop::StandardDocumentationView::anchorClicked, ManPageDocumentation::s_provider->model(), &ManPageModel::showItemFromUrl);
+#endif
     return view;
 }
 

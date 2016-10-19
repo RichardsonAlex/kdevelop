@@ -34,7 +34,6 @@
 
 #include <interfaces/icore.h>
 #include <interfaces/idocumentationcontroller.h>
-#include <documentation/standarddocumentationview.h>
 #include "qthelpnetwork.h"
 #include "qthelpproviderabstract.h"
 
@@ -224,23 +223,34 @@ QString QtHelpDocumentation::description() const
     return QStringList(m_info.keys()).join(", ");
 }
 
-void QtHelpDocumentation::setUserStyleSheet(QWebView* view, const QUrl& url)
+void QtHelpDocumentation::setUserStyleSheet(StandardDocumentationView* view, const QUrl& url)
 {
 
+#if HAVE_QTWEBKIT
     QTemporaryFile* file = new QTemporaryFile(view);
     file->open();
 
     QTextStream ts(file);
+#else
+    QString cssString;
+    QTextStream ts(&cssString);
+#endif
     ts << "html { background: white !important; }\n";
     if (url.scheme() == "qthelp" && url.host().startsWith("com.trolltech.qt.")) {
        ts << ".content .toc + .title + p { clear:left; }\n"
           << "#qtdocheader .qtref { position: absolute !important; top: 5px !important; right: 0 !important; }\n";
     }
+#if HAVE_QTWEBKIT
     file->close();
     view->settings()->setUserStyleSheetUrl(QUrl::fromLocalFile(file->fileName()));
-
     delete m_lastStyleSheet.data();
     m_lastStyleSheet = file;
+#else
+    ts.flush();
+    qWarning() << "Setting css to" << cssString;
+    view->document()->setDefaultStyleSheet(cssString);
+#endif
+
 }
 
 QWidget* QtHelpDocumentation::documentationWidget(DocumentationFindWidget* findWidget, QWidget* parent)
@@ -249,6 +259,7 @@ QWidget* QtHelpDocumentation::documentationWidget(DocumentationFindWidget* findW
         return new QLabel(i18n("Could not find any documentation for '%1'", m_name), parent);
     } else {
         StandardDocumentationView* view = new StandardDocumentationView(findWidget, parent);
+#if HAVE_QTWEBKIT
         // QCH files created by doxygen can come with JavaScript
         view->settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
         if (!m_sharedQNAM) {
@@ -258,12 +269,16 @@ QWidget* QtHelpDocumentation::documentationWidget(DocumentationFindWidget* findW
         view->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
         view->setContextMenuPolicy(Qt::CustomContextMenu);
         connect(view, &StandardDocumentationView::customContextMenuRequested, this, &QtHelpDocumentation::viewContextMenuRequested);
-
-        QObject::connect(view, &StandardDocumentationView::linkClicked, this, &QtHelpDocumentation::jumpedTo);
-
+        connect(view, &StandardDocumentationView::linkClicked, this, &QtHelpDocumentation::jumpedTo);
+#else
+        connect(view, &StandardDocumentationView::anchorClicked, this, &QtHelpDocumentation::jumpedTo);
+#endif
         setUserStyleSheet(view, m_current.value());
+
         view->setHtml(m_provider->engine()->fileData(m_current.value()));
+#if HAVE_QTWEBKIT
         view->setUrl(m_current.value());
+#endif
         lastView = view;
         return view;
     }
@@ -271,6 +286,7 @@ QWidget* QtHelpDocumentation::documentationWidget(DocumentationFindWidget* findW
 
 void QtHelpDocumentation::viewContextMenuRequested(const QPoint& pos)
 {
+#if HAVE_QTWEBKIT
     StandardDocumentationView* view = qobject_cast<StandardDocumentationView*>(sender());
     if (!view)
         return;
@@ -293,6 +309,7 @@ void QtHelpDocumentation::viewContextMenuRequested(const QPoint& pos)
     }
 
     menu.exec(view->mapToGlobal(pos));
+#endif
 }
 
 
@@ -301,7 +318,11 @@ void QtHelpDocumentation::jumpedTo(const QUrl& newUrl)
     Q_ASSERT(lastView);
     m_provider->jumpedTo(newUrl);
     setUserStyleSheet(lastView, newUrl);
+#if HAVE_QTWEBKIT
     lastView->load(newUrl);
+#else
+    lastView->setSource(newUrl);
+#endif
 }
 
 IDocumentationProvider* QtHelpDocumentation::provider() const
