@@ -247,7 +247,6 @@ void QtHelpDocumentation::setUserStyleSheet(StandardDocumentationView* view, con
     m_lastStyleSheet = file;
 #else
     ts.flush();
-    qWarning() << "Setting css to" << cssString;
     view->document()->setDefaultStyleSheet(cssString);
 #endif
 
