@@ -24,6 +24,8 @@
 #include "compilerfactories.h"
 #include "compilerprovider.h"
 
+#include <QStandardPaths>
+
 #include "gcclikecompiler.h"
 #include "msvccompiler.h"
 
@@ -39,10 +41,12 @@ CompilerPointer ClangFactory::createCompiler(const QString& name, const QString&
 
 void ClangFactory::registerDefaultCompilers(CompilerProvider* provider) const
 {
-    const QString clang = QStringLiteral("clang");
+    const QString clang = QStandardPaths::findExecutable(QStringLiteral("clang"));
 
-    auto compiler = createCompiler(name(), clang, false);
-    provider->registerCompiler(compiler);
+    if (!clang.isEmpty()) {
+        auto compiler = createCompiler(name(), clang, false);
+        provider->registerCompiler(compiler);
+    }
 }
 
 QString GccFactory::name() const
@@ -57,10 +61,12 @@ CompilerPointer GccFactory::createCompiler(const QString& name, const QString& p
 
 void GccFactory::registerDefaultCompilers(CompilerProvider* provider) const
 {
-    const QString gcc = QStringLiteral("gcc");
+    const QString gcc = QStandardPaths::findExecutable(QStringLiteral("gcc"));
 
-    auto compiler = createCompiler(name(), gcc, false);
-    provider->registerCompiler(compiler);
+    if (!gcc.isEmpty()) {
+        auto compiler = createCompiler(name(), gcc, false);
+        provider->registerCompiler(compiler);
+    }
 }
 
 QString MsvcFactory::name() const
