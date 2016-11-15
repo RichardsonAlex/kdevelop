@@ -40,7 +40,7 @@ public:
      * @param factoryName name of the factory that created this compiler
      * @param editable whether user can change the name and the path to the compiler (should be set to false for automatically detected compilers)
     **/
-    ICompiler( const QString& name, const QString& path, const QString& factoryName, bool editable );
+    ICompiler( const QString& name, const QString& path, const QString& additionalArguments, const QString& factoryName, bool editable );
 
     /**
      * @param arguments compiler command-line arguments
@@ -64,6 +64,10 @@ public:
     /// @return user visible name
     QString name() const;
 
+    /** @return the additional arguments passed to the compiler (e.g. -target x86_64-unknown-linux-gnu) */
+    QString additionalArguments() const;
+    void setAdditionalArguments(const QString& additionalArgs);
+
     /// Indicates if the compiler name/path can be set manually
     bool editable() const;
 
@@ -77,6 +81,7 @@ private:
     QString m_name;
     QString m_path;
     QString m_factoryName;
+    QString m_additionalArguments;
 };
 
 typedef QSharedPointer<ICompiler> CompilerPointer;

@@ -29,7 +29,7 @@
 class ClangFactory : public ICompilerFactory
 {
 public:
-    CompilerPointer createCompiler( const QString& name, const QString& path, bool editable = true ) const override;
+    CompilerPointer createCompiler( const QString& name, const QString& path, const QString& additionalArguments, bool editable = true ) const override;
 
     QString name() const override;
 
@@ -39,7 +39,7 @@ public:
 class GccFactory : public ICompilerFactory
 {
 public:
-    CompilerPointer createCompiler( const QString& name, const QString& path, bool editable = true ) const override;
+    CompilerPointer createCompiler( const QString& name, const QString& path, const QString& additionalArguments, bool editable = true ) const override;
 
     QString name() const override;
 
@@ -49,7 +49,7 @@ public:
 class MsvcFactory : public ICompilerFactory
 {
 public:
-    CompilerPointer createCompiler( const QString& name, const QString& path, bool editable = true ) const override;
+    CompilerPointer createCompiler( const QString& name, const QString& path, const QString& additionalArguments, bool editable = true ) const override;
 
     QString name() const override;
 

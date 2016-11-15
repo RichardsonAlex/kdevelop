@@ -80,6 +80,7 @@ CompilersWidget::CompilersWidget(QWidget* parent)
 
     connect(m_ui->compilerName, &QLineEdit::editingFinished, this, &CompilersWidget::compilerEdited);
     connect(m_ui->compilerPath, &QLineEdit::editingFinished, this, &CompilersWidget::compilerEdited);
+    connect(m_ui->compilerExtraArgs, &QPlainTextEdit::textChanged, this, &CompilersWidget::compilerEdited);
 
     connect(m_ui->compilerSelector, &QPushButton::clicked, this, &CompilersWidget::selectCompilerPathDialog);
 
@@ -128,7 +129,7 @@ void CompilersWidget::addCompiler(const QString& factoryName)
     foreach (const auto& factory, provider->compilerFactories()) {
         if (factoryName == factory->name()) {
             //add compiler without any information, the user will fill the data in later
-            auto compilerIndex = m_compilersModel->addCompiler(factory->createCompiler(QString(), QString()));
+            auto compilerIndex = m_compilersModel->addCompiler(factory->createCompiler(QString(), QString(), QString()));
 
             m_ui->compilers->selectionModel()->select(compilerIndex, QItemSelectionModel::Clear | QItemSelectionModel::SelectCurrent | QItemSelectionModel::Rows);
             compilerSelected(compilerIndex);
@@ -150,6 +151,7 @@ void CompilersWidget::compilerSelected(const QModelIndex& index)
     if (compiler.value<CompilerPointer>()) {
         m_ui->compilerName->setText(compiler.value<CompilerPointer>()->name());
         m_ui->compilerPath->setText(compiler.value<CompilerPointer>()->path());
+        m_ui->compilerExtraArgs->document()->setPlainText(compiler.value<CompilerPointer>()->additionalArguments());
         enableItems(true);
     } else {
         enableItems(false);
@@ -168,6 +170,7 @@ void CompilersWidget::compilerEdited()
 
     compiler.value<CompilerPointer>()->setName(m_ui->compilerName->text());
     compiler.value<CompilerPointer>()->setPath(m_ui->compilerPath->text());
+    compiler.value<CompilerPointer>()->setAdditionalArguments(m_ui->compilerExtraArgs->document()->toPlainText());
 
     m_compilersModel->updateCompiler(m_ui->compilers->selectionModel()->selection());
 

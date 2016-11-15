@@ -46,7 +46,7 @@ class NoCompiler : public ICompiler
 {
 public:
     NoCompiler():
-        ICompiler(i18n("None"), QString(), QString(), false)
+        ICompiler(i18n("None"), QString(), QString(), QString(), false)
     {}
 
     QHash< QString, QString > defines(const QString&) const override

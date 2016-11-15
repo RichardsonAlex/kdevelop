@@ -29,7 +29,7 @@
 class MsvcCompiler : public ICompiler
 {
 public:
-    MsvcCompiler(const QString& name, const QString& path, bool editable, const QString& factoryName);
+    MsvcCompiler(const QString& name, const QString& path, const QString& additionalArguments, bool editable, const QString& factoryName);
 
     KDevelop::Defines defines(const QString& arguments) const override;
 

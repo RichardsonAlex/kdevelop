@@ -34,9 +34,9 @@ QString ClangFactory::name() const
     return QStringLiteral("Clang");
 }
 
-CompilerPointer ClangFactory::createCompiler(const QString& name, const QString& path, bool editable ) const
+CompilerPointer ClangFactory::createCompiler(const QString& name, const QString& path, const QString& additionalArguments, bool editable) const
 {
-    return CompilerPointer(new GccLikeCompiler(name, path, editable, this->name()));
+    return CompilerPointer(new GccLikeCompiler(name, path, additionalArguments, editable, this->name()));
 }
 
 void ClangFactory::registerDefaultCompilers(CompilerProvider* provider) const
@@ -44,7 +44,7 @@ void ClangFactory::registerDefaultCompilers(CompilerProvider* provider) const
     const QString clang = QStandardPaths::findExecutable(QStringLiteral("clang"));
 
     if (!clang.isEmpty()) {
-        auto compiler = createCompiler(name(), clang, false);
+        auto compiler = createCompiler(name(), clang, QString(), false);
         provider->registerCompiler(compiler);
     }
 }
@@ -54,9 +54,9 @@ QString GccFactory::name() const
     return QStringLiteral("GCC");
 }
 
-CompilerPointer GccFactory::createCompiler(const QString& name, const QString& path, bool editable ) const
+CompilerPointer GccFactory::createCompiler(const QString& name, const QString& path, const QString& additionalArguments, bool editable ) const
 {
-    return CompilerPointer(new GccLikeCompiler(name, path, editable, this->name()));
+    return CompilerPointer(new GccLikeCompiler(name, path, additionalArguments, editable, this->name()));
 }
 
 void GccFactory::registerDefaultCompilers(CompilerProvider* provider) const
@@ -64,7 +64,7 @@ void GccFactory::registerDefaultCompilers(CompilerProvider* provider) const
     const QString gcc = QStandardPaths::findExecutable(QStringLiteral("gcc"));
 
     if (!gcc.isEmpty()) {
-        auto compiler = createCompiler(name(), gcc, false);
+        auto compiler = createCompiler(name(), gcc, QString(), false);
         provider->registerCompiler(compiler);
     }
 }
@@ -74,12 +74,15 @@ QString MsvcFactory::name() const
     return QStringLiteral("MSVC");
 }
 
-CompilerPointer MsvcFactory::createCompiler(const QString& name, const QString& path, bool editable ) const
+CompilerPointer MsvcFactory::createCompiler(const QString& name, const QString& path, const QString& additionalArguments, bool editable ) const
 {
-   return CompilerPointer(new MsvcCompiler(name, path, editable, this->name()));
+   return CompilerPointer(new MsvcCompiler(name, path, additionalArguments, editable, this->name()));
 }
 
 void MsvcFactory::registerDefaultCompilers(CompilerProvider* provider) const
 {
-    provider->registerCompiler(createCompiler(name(), QStringLiteral("cl.exe"), false));
+    const QString cl = QStandardPaths::findExecutable(QStringLiteral("cl.exe"));
+    if (!cl.isEmpty()) {
+        provider->registerCompiler(createCompiler(name(), cl, QString(), false));
+    }
 }

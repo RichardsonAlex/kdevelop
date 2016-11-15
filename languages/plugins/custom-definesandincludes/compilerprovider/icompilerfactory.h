@@ -36,7 +36,7 @@ public:
 
     ///@return new compiler
     ///@see ICompiler
-    virtual CompilerPointer createCompiler( const QString& name, const QString& path, bool editable = true ) const = 0;
+    virtual CompilerPointer createCompiler( const QString& name, const QString& path, const QString& additionalArguments, bool editable = true) const = 0;
 
     /**
      * registers default compilers for the @p provider

@@ -98,7 +98,7 @@ void TestCompilerProvider::testRegisterCompiler()
     auto provider = settings->provider();
     auto cf = provider->compilerFactories();
     for (int i = 0 ; i < cf.size(); ++i) {
-        auto compiler = cf[i]->createCompiler(QString::number(i), QString::number(i));
+        auto compiler = cf[i]->createCompiler(QString::number(i), QString::number(i), QString());
         QVERIFY(provider->registerCompiler(compiler));
         QVERIFY(!provider->registerCompiler(compiler));
         QVERIFY(provider->compilers().contains(compiler));
@@ -208,7 +208,7 @@ void TestCompilerProvider::testCompilerIncludesAndDefinesForProject()
     auto provider = settings->provider();
 
     Q_ASSERT(!provider->compilerFactories().isEmpty());
-    auto compiler = provider->compilerFactories().first()->createCompiler("name", "path");
+    auto compiler = provider->compilerFactories().first()->createCompiler("name", "path", QString());
 
     QVERIFY(provider->registerCompiler(compiler));
     QVERIFY(provider->compilers().contains(compiler));

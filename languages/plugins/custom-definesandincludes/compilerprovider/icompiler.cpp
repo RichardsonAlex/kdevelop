@@ -27,11 +27,12 @@
 
 using namespace KDevelop;
 
-ICompiler::ICompiler(const QString& name, const QString& path, const QString& factoryName, bool editable):
+ICompiler::ICompiler(const QString& name, const QString& path, const QString& additionalArguments, const QString& factoryName, bool editable):
     m_editable(editable),
     m_name(name),
     m_path(path),
-    m_factoryName(factoryName)
+    m_factoryName(factoryName),
+    m_additionalArguments(additionalArguments)
 {}
 
 void ICompiler::setPath(const QString& path)
@@ -66,4 +67,16 @@ bool ICompiler::editable() const
 QString ICompiler::factoryName() const
 {
     return m_factoryName;
+}
+
+QString ICompiler::additionalArguments() const
+{
+    return m_additionalArguments;
+}
+
+void ICompiler::setAdditionalArguments(const QString& additionalArgs)
+{
+    if (editable()) {
+        m_additionalArguments = additionalArgs;
+    }
 }

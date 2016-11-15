@@ -125,6 +125,6 @@ Path::List MsvcCompiler::includes(const QString&) const
     return includePaths;
 }
 
-MsvcCompiler::MsvcCompiler(const QString& name, const QString& path, bool editable, const QString& factoryName):
-    ICompiler(name, path, factoryName, editable)
+MsvcCompiler::MsvcCompiler(const QString& name, const QString& path, const QString& additionalArguments, bool editable, const QString& factoryName):
+    ICompiler(name, path, additionalArguments, factoryName, editable)
 {}

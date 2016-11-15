@@ -29,7 +29,7 @@
 class GccLikeCompiler : public ICompiler
 {
 public:
-    GccLikeCompiler( const QString& name, const QString& path, bool editable, const QString& factoryName );
+    GccLikeCompiler( const QString& name, const QString& path, const QString& additionalArguments, bool editable, const QString& factoryName );
 
     KDevelop::Defines defines(const QString& arguments) const override;
 

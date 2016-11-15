@@ -55,6 +55,7 @@ const QString compilersGroup = QLatin1String( "Compilers" );
 const QString compilerNameKey = QLatin1String( "Name" );
 const QString compilerPathKey = QLatin1String( "Path" );
 const QString compilerTypeKey = QLatin1String( "Type" );
+const QString compilerAdditionalArgsKey = QLatin1String( "ExtraArguments" );
 
 QString parserArgumentsCPP()
 {
@@ -347,6 +348,7 @@ void SettingsManager::writeUserDefinedCompilers(const QVector< CompilerPointer >
         grp.writeEntry(ConfigConstants::compilerNameKey, compiler->name());
         grp.writeEntry(ConfigConstants::compilerPathKey, compiler->path());
         grp.writeEntry(ConfigConstants::compilerTypeKey, compiler->factoryName());
+        grp.writeEntry(ConfigConstants::compilerAdditionalArgsKey, compiler->additionalArguments());
     }
     config.sync();
 }
@@ -363,11 +365,12 @@ QVector< CompilerPointer > SettingsManager::userDefinedCompilers() const
         auto name = grp.readEntry(ConfigConstants::compilerNameKey, QString());
         auto path = grp.readEntry(ConfigConstants::compilerPathKey, QString());
         auto type = grp.readEntry(ConfigConstants::compilerTypeKey, QString());
+        auto additionalArgs = grp.readEntry(ConfigConstants::compilerAdditionalArgsKey, QString());
 
         auto cf = m_provider.compilerFactories();
         for (auto f : cf) {
             if (f->name() == type) {
-                auto compiler = f->createCompiler(name, path);
+                auto compiler = f->createCompiler(name, path, additionalArgs);
                 compilers.append(compiler);
             }
         }
