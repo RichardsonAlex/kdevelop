@@ -120,10 +120,7 @@ public:
         : QApplication(argc, argv, GUIenabled)
 #endif
         {
-#if KDEVELOP_SINGLE_APP
             Q_UNUSED(GUIenabled);
-#endif
-
             connect(this, &QGuiApplication::saveStateRequest, this, &KDevelopApplication::saveState);
         }
 
@@ -166,7 +163,7 @@ private Q_SLOTS:
             }
 
             QString kdevelopSessionId = activeSession->id().toString();
-            sm.setRestartCommand(QStringList() << QCoreApplication::applicationFilePath() << "-session" << x11SessionId << "-s" << kdevelopSessionId);
+            sm.setRestartCommand({QCoreApplication::applicationFilePath(), "-session", x11SessionId, "-s", kdevelopSessionId});
         }
     }
 };
@@ -658,29 +655,27 @@ int main( int argc, char *argv[] )
     }
 
     QStringList projectNames = parser.values("project");
-    if(!projectNames.isEmpty())
+    foreach(const QString& projectName, projectNames)
     {
-        foreach(const QString& p, projectNames)
-        {
-            QFileInfo info( p );
-            if( info.suffix() == "kdev4" ) {
-                // make sure the project is not already opened by the session controller
-                bool shouldOpen = true;
-                Path path(info.absoluteFilePath());
-                foreach(KDevelop::IProject* p, core->projectController()->projects()) {
-                    if (p->projectFile() == path) {
-                        shouldOpen = false;
-                        break;
-                    }
+        QFileInfo info( projectName );
+        if( info.suffix() == "kdev4" ) {
+            // make sure the project is not already opened by the session controller
+            bool shouldOpen = true;
+            Path path(info.absoluteFilePath());
+            foreach(KDevelop::IProject* project, core->projectController()->projects()) {
+                if (project->projectFile() == path) {
+                    shouldOpen = false;
+                    break;
                 }
-                if (shouldOpen) {
-                    core->projectController()->openProject( path.toUrl() );
-                }
+            }
+            if (shouldOpen) {
+                core->projectController()->openProject( path.toUrl() );
             }
         }
     }
 
-    if ( parser.isSet("debug") ) {
+    const QString debugStr = QStringLiteral("debug");
+    if ( parser.isSet(debugStr) ) {
         Q_ASSERT( !debugeeName.isEmpty() );
         QString launchName = debugeeName;
 
@@ -708,21 +703,21 @@ int main( int argc, char *argv[] )
         }
 
         if (launch && launch->type()->id() != "Native Application") launch = nullptr;
-        if (launch && launch->launcherForMode("debug") != parser.value("debug")) launch = nullptr;
+        if (launch && launch->launcherForMode(debugStr) != parser.value(debugStr)) launch = nullptr;
         if (!launch) {
             qCDebug(APP) << launchName << "not found, creating a new one";
             QPair<QString,QString> launcher;
-            launcher.first = "debug";
+            launcher.first = debugStr;
             foreach (KDevelop::ILauncher *l, type->launchers()) {
-                if (l->id() == parser.value("debug")) {
-                    if (l->supportedModes().contains("debug")) {
+                if (l->id() == parser.value(debugStr)) {
+                    if (l->supportedModes().contains(debugStr)) {
                         launcher.second = l->id();
                     }
                 }
             }
             if (launcher.second.isEmpty()) {
                 QTextStream qerr(stderr);
-                qerr << endl << i18n("Cannot find launcher %1", parser.value("debug")) << endl;
+                qerr << endl << i18n("Cannot find launcher %1", parser.value(debugStr)) << endl;
                 return 1;
             }
             KDevelop::ILaunchConfiguration* ilaunch = core->runController()->createLaunchConfiguration(type, launcher, nullptr, launchName);
@@ -733,7 +728,7 @@ int main( int argc, char *argv[] )
         launch->config().writeEntry("Break on Start", true);
         core->runControllerInternal()->setDefaultLaunch(launch);
 
-        core->runControllerInternal()->execute("debug", launch);
+        core->runControllerInternal()->execute(debugStr, launch);
     } else {
         openFiles(initialFiles);
     }
