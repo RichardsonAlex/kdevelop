@@ -51,11 +51,8 @@ using namespace KDevelop;
 CMakePreferences::CMakePreferences(IPlugin* plugin, const ProjectConfigOptions& options, QWidget* parent)
     : ConfigPage(plugin, nullptr, parent), m_project(options.project), m_currentModel(nullptr)
 {
-    QVBoxLayout* l = new QVBoxLayout( this );
-    QWidget* w = new QWidget;
     m_prefsUi = new Ui::CMakeBuildSettings;
-    m_prefsUi->setupUi( w );
-    l->addWidget( w );
+    m_prefsUi->setupUi(this);
 
     m_prefsUi->addBuildDir->setIcon(QIcon::fromTheme( "list-add" ));
     m_prefsUi->removeBuildDir->setIcon(QIcon::fromTheme( "list-remove" ));
@@ -302,13 +299,7 @@ void CMakePreferences::createBuildDir()
 
     if(bdCreator.exec())
     {
-        QString newbuilddir = bdCreator.buildFolder().toLocalFile();
-        m_prefsUi->buildDirs->addItem(newbuilddir);
-
-        int buildDirCount = m_prefsUi->buildDirs->count();
-        int addedBuildDirIndex = buildDirCount - 1;
-        m_prefsUi->buildDirs->setCurrentIndex(addedBuildDirIndex);
-        m_prefsUi->removeBuildDir->setEnabled(true);
+        int addedBuildDirIndex = m_prefsUi->buildDirs->count();
 
         // Initialize the kconfig items with the values from the dialog, this ensures the settings
         // end up in the config file once the changes are saved
@@ -319,13 +310,19 @@ void CMakePreferences::createBuildDir()
         qCDebug(CMAKE) << "adding to cmake config: build type " << bdCreator.buildType();
         qCDebug(CMAKE) << "adding to cmake config: cmake binary " << bdCreator.cmakeBinary();
         qCDebug(CMAKE) << "adding to cmake config: environment empty";
-        CMake::setBuildDirCount( m_project, buildDirCount );
+        CMake::setOverrideBuildDirIndex( m_project, addedBuildDirIndex );
+        CMake::setBuildDirCount( m_project, addedBuildDirIndex + 1 );
         CMake::setCurrentBuildDir( m_project, bdCreator.buildFolder() );
         CMake::setCurrentInstallDir( m_project, bdCreator.installPrefix() );
         CMake::setCurrentExtraArguments( m_project, bdCreator.extraArguments() );
         CMake::setCurrentBuildType( m_project, bdCreator.buildType() );
         CMake::setCurrentCMakeBinary( m_project, bdCreator.cmakeBinary() );
         CMake::setCurrentEnvironment( m_project, QString() );
+
+        QString newbuilddir = bdCreator.buildFolder().toLocalFile();
+        m_prefsUi->buildDirs->addItem( newbuilddir );
+        m_prefsUi->buildDirs->setCurrentIndex( addedBuildDirIndex );
+        m_prefsUi->removeBuildDir->setEnabled( true );
 
         qCDebug(CMAKE) << "Emitting changed signal for cmake kcm";
         emit changed();

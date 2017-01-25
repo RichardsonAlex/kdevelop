@@ -20,8 +20,6 @@
 
 #include "ninjabuilderpreferences.h"
 
-#include <QVBoxLayout>
-
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 #include <util/environmentgrouplist.h>
@@ -37,15 +35,10 @@ NinjaBuilderPreferences::NinjaBuilderPreferences(IPlugin* plugin,
                                                  QWidget* parent)
     : ProjectConfigPage<NinjaBuilderSettings>(plugin, options, parent)
 {
-    QVBoxLayout* l = new QVBoxLayout( this );
-    QWidget* w = new QWidget;
     m_prefsUi = new Ui::NinjaConfig;
-    m_prefsUi->setupUi( w );
-    l->addWidget( w );
+    m_prefsUi->setupUi(this);
 
     connect(m_prefsUi->configureEnvironment, &EnvironmentConfigureButton::environmentConfigured,
-            this, &NinjaBuilderPreferences::changed);
-    connect(m_prefsUi->kcfg_environmentProfile, &EnvironmentSelectionWidget::currentProfileChanged,
             this, &NinjaBuilderPreferences::changed);
 
     m_prefsUi->configureEnvironment->setSelectionWidget( m_prefsUi->kcfg_environmentProfile );
