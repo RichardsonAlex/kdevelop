@@ -6,10 +6,11 @@
 
 #include <QtTest>
 
-// other options: QTEST_GUILESS_MAIN, QTEST_APPLESS_MAIN
-QTEST_MAIN({{ name }});
+
+{{ qtest_main }}({{ name }});
 
 
+{% if testCase_initAndCleanup %}
 void {{name}}::initTestCase()
 {
     // Called before the first testfunction is executed
@@ -22,6 +23,8 @@ void {{name}}::cleanupTestCase()
 }
 
 
+{% endif %}
+{% if test_initAndCleanup %}
 void {{name}}::init()
 {
     // Called before each testfunction is executed
@@ -34,9 +37,10 @@ void {{name}}::cleanup()
 }
 
 
+{% endif %}
 {% for case in testCases %}
 
-void {{name}}::{{ case }}()
+void {{ name }}::{% if test_prefixMethods %}test{{ case|upper_first }}{% else %}{{ case }}{% endif %}()
 {
 
 

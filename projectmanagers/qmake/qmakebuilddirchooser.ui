@@ -20,21 +20,24 @@
    <property name="fieldGrowthPolicy">
     <enum>QFormLayout::ExpandingFieldsGrow</enum>
    </property>
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item row="0" column="0">
     <widget class="QLabel" name="label_5">
      <property name="text">
-      <string>QMake &amp;binary:</string>
+      <string>QMake &amp;executable:</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
      <property name="buddy">
-      <cstring>kcfg_qmakeBin</cstring>
+      <cstring>kcfg_qmakeExecutable</cstring>
      </property>
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="KUrlRequester" name="kcfg_qmakeBin">
+    <widget class="KUrlRequester" name="kcfg_qmakeExecutable">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -149,13 +152,13 @@
   </customwidget>
   <customwidget>
    <class>KMessageWidget</class>
-   <extends>QWidget</extends>
+   <extends>QFrame</extends>
    <header location="global">kmessagewidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>kcfg_qmakeBin</tabstop>
+  <tabstop>kcfg_qmakeExecutable</tabstop>
   <tabstop>kcfg_buildDir</tabstop>
   <tabstop>kcfg_installPrefix</tabstop>
   <tabstop>kcfg_buildType</tabstop>

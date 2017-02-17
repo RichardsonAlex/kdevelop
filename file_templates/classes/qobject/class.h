@@ -13,6 +13,7 @@
 {% if base_classes %}
 {{ block.super }}
 {% else %}
+{% include "class_declaration_apidox_cpp.txt" %}
 class {{ name }} : public QObject
 {
 {% endif %}
@@ -21,7 +22,7 @@ class {{ name }} : public QObject
 {% block class_body %}
     Q_OBJECT
     {% for property in members %}
-    Q_PROPERTY({{ property.type }} {{ property.name }} READ {{ property.name }} WRITE set{{ property.name|upper_first }})
+    {% include "class_qproperty_declaration_cpp.txt" %}
     {% endfor %}
 
 
@@ -29,18 +30,34 @@ class {{ name }} : public QObject
 public:
 {% endif %}
     {% for method in public_functions %}
-        {% include "method_declaration_cpp.txt" %}
+
+        {% include "class_method_declaration_apidox_cpp.txt" %}
+        {% include "class_method_declaration_cpp.txt" %}
+
     {% endfor %}
 
     {% for property in members %}
-    {{ property.type }} {{ property.name }}() const;
+
+    {% include "class_property_getter_declaration_apidox_cpp.txt" %}
+    {% include "class_property_getter_declaration_cpp.txt" %}
+
     {% endfor %}
 
 
 {% if members %}
 public Q_SLOTS:
     {% for property in members %}
-    void set{{ property.name|upper_first }}({{ property.type|arg_type }} {{ property.name }});
+
+    {% include "class_property_setter_declaration_apidox_cpp.txt" %}
+    {% include "class_property_setter_declaration_cpp.txt" %}
+
+    {% endfor %}
+
+Q_SIGNALS:
+    {% for property in members %}
+
+    {% include "class_property_signal_declaration_cpp.txt" %}
+
     {% endfor %}
 {% endif %}
 
@@ -48,17 +65,25 @@ public Q_SLOTS:
 {% if protected_functions %}
 protected:
     {% for method in protected_functions %}
-        {% include "method_declaration_cpp.txt" %}
+
+        {% include "class_method_declaration_apidox_cpp.txt" %}
+        {% include "class_method_declaration_cpp.txt" %}
+
     {% endfor %}
 {% endif %}
 
 
+{% if private_functions or members %}
 private:
     {% for method in private_functions %}
-    {% include "method_declaration.txt" %}
+
+        {% include "class_method_declaration_apidox_cpp.txt" %}
+        {% include "class_method_declaration_cpp.txt" %}
+
     {% endfor %}
 
     {% for property in members %}
     {{property.type}} m_{{property.name}};
     {% endfor %}
+{% endif %}
 {% endblock class_body %}

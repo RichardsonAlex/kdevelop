@@ -30,15 +30,15 @@ class Path;
 class QMakeConfig
 {
 public:
-    static const char *CONFIG_GROUP;
+    static const char CONFIG_GROUP[];
 
     static const char 
-        *QMAKE_BINARY,
-        *BUILD_FOLDER,
-        *INSTALL_PREFIX,
-        *EXTRA_ARGUMENTS,
-        *BUILD_TYPE,
-        *ALL_BUILDS;
+        QMAKE_EXECUTABLE[],
+        BUILD_FOLDER[],
+        INSTALL_PREFIX[],
+        EXTRA_ARGUMENTS[],
+        BUILD_TYPE[],
+        ALL_BUILDS[];
 
     /**
      * Returns true when the given project is sufficiently configured.
@@ -52,14 +52,14 @@ public:
     static KDevelop::Path buildDirFromSrc(const KDevelop::IProject* project, const KDevelop::Path& srcDir);
 
     /**
-     * Returns the QMake binary configured for the given @p project.
+     * Returns the QMake executable configured for the given @p project.
      */
-    static QString qmakeBinary(const KDevelop::IProject* project);
+    static QString qmakeExecutable(const KDevelop::IProject* project);
 
     /**
      * Query QMake and return the thus obtained QMake variables.
      */
-    static QHash<QString, QString> queryQMake(const QString& qmakeBinary, const QStringList& args = {});
+    static QHash<QString, QString> queryQMake(const QString& qmakeExecutable, const QStringList& args = {});
 
     /**
      * Given the QMake variables, try to find a basic MkSpec.

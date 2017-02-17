@@ -131,7 +131,7 @@ KDevelop::ProjectBaseItem * MakeJob::item() const
     return ICore::self()->projectController()->projectModel()->itemFromIndex(m_idx);
 }
 
-MakeJob::CommandType MakeJob::commandType()
+MakeJob::CommandType MakeJob::commandType() const
 {
     return m_command;
 }
@@ -206,7 +206,8 @@ QStringList MakeJob::commandLine() const
     KSharedConfigPtr configPtr = it->project()->projectConfiguration();
     KConfigGroup builderGroup( configPtr, "MakeBuilder" );
 
-    QString makeBin = builderGroup.readEntry("Make Binary", MakeBuilderPreferences::standardMakeCommand());
+    // TODO: migrate to more generic key term "Make Executable"
+    QString makeBin = builderGroup.readEntry("Make Binary", MakeBuilderPreferences::standardMakeExecutable());
     cmdline << makeBin;
 
     if( ! builderGroup.readEntry("Abort on First Error", true))
