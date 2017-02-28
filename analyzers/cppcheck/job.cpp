@@ -7,7 +7,7 @@
    Copyright 2006-2008 Hamish Rodda <rodda@kde.org>
    Copyright 2002 Harald Fernengel <harry@kdevelop.org>
    Copyright 2013 Christoph Thielecke <crissi99@gmx.de>
-   Copyright 2016 Anton Anikin <anton.anikin@htower.ru>
+   Copyright 2016-2017 Anton Anikin <anton.anikin@htower.ru>
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
@@ -29,12 +29,11 @@
 
 #include "debug.h"
 #include "parser.h"
+#include "problem.h"
+#include "utils.h"
 
-#include <interfaces/icore.h>
-#include <interfaces/iprojectcontroller.h>
-#include <KLocalizedString>
-#include <KMessageBox>
-#include <shell/problem.h>
+#include <klocalizedstring.h>
+#include <kmessagebox.h>
 
 #include <QApplication>
 #include <QElapsedTimer>
@@ -50,10 +49,7 @@ Job::Job(const Parameters& params, QObject* parent)
     , m_showXmlOutput(params.showXmlOutput)
     , m_projectRootPath(params.projectRootPath())
 {
-    QString prettyName = KDevelop::ICore::self()->projectController()->prettyFileName(
-        QUrl::fromLocalFile(params.checkPath),
-        KDevelop::IProjectController::FormatPlain);
-    setJobName(i18n("Cppcheck (%1)", prettyName));
+    setJobName(i18n("Cppcheck Analysis (%1)", prettyPathName(params.checkPath)));
 
     setCapabilities(KJob::Killable);
     setStandardToolView(KDevelop::IOutputView::TestView);
@@ -95,8 +91,9 @@ void Job::postProcessStdout(const QStringList& lines)
 
     m_standardOutput << lines;
 
-    if (status() == KDevelop::OutputExecuteJob::JobStatus::JobRunning)
+    if (status() == KDevelop::OutputExecuteJob::JobStatus::JobRunning) {
         KDevelop::OutputExecuteJob::postProcessStdout(lines);
+    }
 }
 
 void Job::postProcessStderr(const QStringList& lines)
@@ -121,9 +118,8 @@ void Job::postProcessStderr(const QStringList& lines)
             emitProblems();
         }
         else {
-            KDevelop::IProblem::Ptr problem(new KDevelop::DetectedProblem);
+            KDevelop::IProblem::Ptr problem(new CppcheckProblem);
 
-            problem->setSource(KDevelop::IProblem::Plugin);
             problem->setSeverity(KDevelop::IProblem::Error);
             problem->setDescription(line);
             problem->setExplanation("Check your cppcheck settings");
@@ -131,15 +127,17 @@ void Job::postProcessStderr(const QStringList& lines)
             m_problems = {problem};
             emitProblems();
 
-            if (m_showXmlOutput)
+            if (m_showXmlOutput) {
                 m_standardOutput << line;
-            else
+            } else {
                 postProcessStdout({line});
+            }
         }
     }
 
-    if (status() == KDevelop::OutputExecuteJob::JobStatus::JobRunning && m_showXmlOutput)
+    if (status() == KDevelop::OutputExecuteJob::JobStatus::JobRunning && m_showXmlOutput) {
         KDevelop::OutputExecuteJob::postProcessStderr(lines);
+    }
 }
 
 void Job::start()
@@ -163,8 +161,9 @@ void Job::childProcessError(QProcess::ProcessError e)
         break;
 
     case QProcess::Crashed:
-        if (status() != KDevelop::OutputExecuteJob::JobStatus::JobCanceled)
+        if (status() != KDevelop::OutputExecuteJob::JobStatus::JobCanceled) {
             message = i18n("Cppcheck crashed.");
+        }
         break;
 
     case QProcess::Timedout:
@@ -185,8 +184,9 @@ void Job::childProcessError(QProcess::ProcessError e)
         break;
     }
 
-    if (!message.isEmpty())
+    if (!message.isEmpty()) {
         KMessageBox::error(qApp->activeWindow(), message, i18n("Cppcheck Error"));
+    }
 
     KDevelop::OutputExecuteJob::childProcessError(e);
 }
@@ -209,24 +209,9 @@ void Job::childProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
 
 void Job::emitProblems()
 {
-    if (m_problems.isEmpty())
-        return;
-
-    foreach (auto problem, m_problems) {
-        problem->setFinalLocationMode(KDevelop::IProblem::TrimmedLine);
-
-        // Fix problems with incorrect range, which produced by cppcheck's errors
-        // without <location> element. In this case location automatically gets "/"
-        // which entails showing file dialog after selecting such problem in
-        // ProblemsView. To avoid this we set project's root path as problem location.
-        auto range = problem->finalLocation();
-        if (range.document.isEmpty()) {
-            range.document = KDevelop::IndexedString(m_projectRootPath.toLocalFile());
-            problem->setFinalLocation(range);
-        }
+    if (!m_problems.isEmpty()) {
+        emit problemsDetected(m_problems);
     }
-
-    emit problemsDetected(m_problems);
 }
 
 }
