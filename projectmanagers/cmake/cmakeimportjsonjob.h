@@ -31,7 +31,7 @@
 class CMakeFolderItem;
 
 struct ImportData {
-    CMakeJsonData json;
+    CMakeFilesCompilationData compilationData;
     QHash<KDevelop::Path, QStringList> targets;
     QVector<Test> testSuites;
 };
@@ -42,7 +42,7 @@ class IProject;
 class ReferencedTopDUContext;
 }
 
-class CMakeImportJob : public KJob
+class CMakeImportJsonJob : public KJob
 {
     Q_OBJECT
 
@@ -52,32 +52,23 @@ public:
         ReadError ///< Failed to read the JSON file
     };
 
-    CMakeImportJob(KDevelop::IProject* project, QObject* parent);
-    ~CMakeImportJob() override;
+    CMakeImportJsonJob(KDevelop::IProject* project, QObject* parent);
+    ~CMakeImportJsonJob() override;
 
     void start() override;
 
     KDevelop::IProject* project() const;
 
-    /**
-     * Return the parsed JSON data
-     *
-     * @note Only call after the job has finished!
-     */
-    CMakeJsonData jsonData() const;
-    QHash<KDevelop::Path, QStringList> targets() const { return m_targets; }
-    QVector<Test> testSuites() const { return m_testSuites; }
+    CMakeProjectData projectData() const;
 
 private Q_SLOTS:
-    void importFinished();
+    void importCompileCommandsJsonFinished();
 
 private:
     KDevelop::IProject* m_project;
     QFutureWatcher<ImportData> m_futureWatcher;
 
-    CMakeJsonData m_data;
-    QHash<KDevelop::Path, QStringList> m_targets;
-    QVector<Test> m_testSuites;
+    CMakeProjectData m_data;
 };
 
 #endif // CMAKEIMPORTJSONJOB_H

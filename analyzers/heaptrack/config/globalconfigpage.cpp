@@ -1,5 +1,4 @@
 /* This file is part of KDevelop
-
    Copyright 2017 Anton Anikin <anton.anikin@htower.ru>
 
    This program is free software; you can redistribute it and/or
@@ -18,27 +17,39 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "problem.h"
+#include "globalconfigpage.h"
+#include "ui_globalconfigpage.h"
 
-namespace cppcheck
+#include "globalsettings.h"
+
+namespace Heaptrack
 {
 
-CppcheckProblem::CppcheckProblem()
+GlobalConfigPage::GlobalConfigPage(KDevelop::IPlugin* plugin, QWidget* parent)
+    : ConfigPage(plugin, GlobalSettings::self(), parent)
 {
+    Ui::GlobalConfigPage ui;
+    ui.setupUi(this);
 }
 
-CppcheckProblem::~CppcheckProblem()
+KDevelop::ConfigPage::ConfigPageType GlobalConfigPage::configPageType() const
 {
+    return KDevelop::ConfigPage::AnalyzerConfigPage;
 }
 
-CppcheckProblem::Source CppcheckProblem::source() const
+QString GlobalConfigPage::name() const
 {
-    return Plugin;
-};
+    return i18n("Heaptrack");
+}
 
-QString CppcheckProblem::sourceString() const
+QString GlobalConfigPage::fullName() const
 {
-    return QStringLiteral("Cppcheck");
-};
+    return i18n("Configure Heaptrack Settings");
+}
+
+QIcon GlobalConfigPage::icon() const
+{
+    return QIcon::fromTheme(QStringLiteral("office-chart-area"));
+}
 
 }

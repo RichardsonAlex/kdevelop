@@ -1,5 +1,4 @@
 /* This file is part of KDevelop
-
    Copyright 2017 Anton Anikin <anton.anikin@htower.ru>
 
    This program is free software; you can redistribute it and/or
@@ -20,20 +19,24 @@
 
 #pragma once
 
-#include <shell/problem.h>
+#include <interfaces/configpage.h>
 
-namespace cppcheck
+namespace Heaptrack
 {
 
-class CppcheckProblem
-    : public KDevelop::DetectedProblem
+class GlobalConfigPage: public KDevelop::ConfigPage
 {
+    Q_OBJECT
+
 public:
-    CppcheckProblem();
-    ~CppcheckProblem() override;
+    GlobalConfigPage(KDevelop::IPlugin* plugin, QWidget* parent);
+    ~GlobalConfigPage() override = default;
 
-    Source source() const override;
-    QString sourceString() const override;
+    KDevelop::ConfigPage::ConfigPageType configPageType() const override;
+
+    QString name() const override;
+    QString fullName() const override;
+    QIcon icon() const override;
 };
 
 }

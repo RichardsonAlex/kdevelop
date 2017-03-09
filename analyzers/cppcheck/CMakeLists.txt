@@ -1,9 +1,5 @@
 add_definitions(-DTRANSLATION_DOMAIN=\"kdevcppcheck\")
 
-include_directories(
-    ${CMAKE_CURRENT_BINARY_DIR}
-)
-
 set(kdevcppcheck_SRCS
     plugin.cpp
     problemmodel.cpp
@@ -24,7 +20,6 @@ add_library(kdevcppcheck_core STATIC
     parser.cpp
     job.cpp
     parameters.cpp
-    problem.cpp
     utils.cpp
 
     ${kdevcppcheck_CONFIG_SRCS}

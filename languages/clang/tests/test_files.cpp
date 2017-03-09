@@ -19,8 +19,6 @@
 
 #include "test_files.h"
 
-#include "duchain/builder.h"
-
 #include <language/duchain/duchain.h>
 #include <language/duchain/problem.h>
 #include <language/codegen/coderepresentation.h>
@@ -68,7 +66,7 @@ void TestFiles::testFiles_data()
 {
     QTest::addColumn<QString>("fileName");
     const QString testDirPath = TEST_FILES_DIR;
-    const QStringList files = QDir(testDirPath).entryList({"*.h", "*.cpp", "*.c"}, QDir::Files);
+    const QStringList files = QDir(testDirPath).entryList({"*.h", "*.cpp", "*.c", "*.cl"}, QDir::Files);
     foreach (const QString& file, files) {
         QTest::newRow(file.toUtf8().constData()) << QString(testDirPath + '/' + file);
     }

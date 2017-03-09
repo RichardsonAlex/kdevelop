@@ -9,26 +9,15 @@ add_subdirectory(icons)
 # the debug visitor prints out the Ast for the CMakeLists.txt file.
 #add_definitions( -DCMAKEDEBUGVISITOR )
 
-add_definitions( -DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS)
-
 set( cmakecommon_SRCS
   parser/cmListFileLexer.c
-#   parser/astfactory.cpp
-#   parser/cmakelistsparser.cpp
-#   parser/cmakeast.cpp
-#   parser/cmakecondition.cpp
-#   parser/cmakeprojectvisitor.cpp
-#   parser/variablemap.cpp
-#   parser/cmakedebugvisitor.cpp
   parser/cmakecachereader.cpp
   parser/cmakelistsparser.cpp
   parser/cmakeduchaintypes.cpp
-#   parser/cmakeparserutils.cpp
-#   parser/cmakeduchaintypes.cpp
-#   parser/generationexpressionsolver.cpp
   cmakeutils.cpp
   cmakeextraargumentshistory.cpp
   cmakebuilddirchooser.cpp
+  cmakeserver.cpp
   debug.cpp
 
  )
@@ -44,8 +33,10 @@ set( cmakemanager_SRCS
   testing/ctestsuite.cpp
   testing/qttestdelegate.cpp
   cmakeimportjsonjob.cpp
+  cmakeserverimportjob.cpp
   cmakenavigationwidget.cpp
   cmakemanager.cpp
+  cmakeprojectdata.cpp
   cmakemodelitems.cpp
   duchain/cmakeparsejob.cpp
   duchain/usebuilder.cpp
@@ -53,7 +44,6 @@ set( cmakemanager_SRCS
   duchain/contextbuilder.cpp
   cmakecodecompletionmodel.cpp
 #   cmakecommitchangesjob.cpp
-#   cmakeimportjob.cpp
 #   cmakeedit.cpp
   debug.cpp
 )
@@ -86,6 +76,7 @@ endif()
 #       Its only purpose is to support the plugin without needing to add all source files
 #       to the plugin target
 
+kconfig_add_kcfg_files( cmakecommon_SRCS cmakebuilderconfig.kcfgc )
 ki18n_wrap_ui( cmakecommon_SRCS ${cmakecommon_UI} )
 add_library( kdevcmakecommon SHARED ${cmakecommon_SRCS} )
 target_link_libraries( kdevcmakecommon
