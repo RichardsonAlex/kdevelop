@@ -1,33 +1,44 @@
 {
-    "GenericName": "Heaptrack Support",
-    "GenericName[x-test]": "xxHeaptrack Supportxx",
-
+    "GenericName": "Heaptrack Support", 
+    "GenericName[x-test]": "xxHeaptrack Supportxx", 
     "KPlugin": {
         "Authors": [
             {
-                "Name": "Anton Anikin",
+                "Name": "Anton Anikin", 
                 "Name[x-test]": "xxAnton Anikinxx"
             }
-        ],
-
-        "Category": "Analyzers",
-        "Icon": "office-chart-area",
-        "Id": "kdevheaptrack",
-        "License": "GPL",
+        ], 
+        "Category": "Analyzers", 
+        "Description": "This plugin integrates Heaptrack to KDevelop", 
+        "Description[ca]": "Aquest connector integra el Heaptrack al KDevelop", 
+        "Description[cs]": "Tento modul integruje Heaptrack do KDevelop", 
+        "Description[de]": "Dieses Modul integriert Heaptrack in KDevelop", 
+        "Description[it]": "Questa estensione integra Heaptrack in KDevelop", 
+        "Description[nl]": "Deze plugin integreert Heaptrack in KDevelop", 
+        "Description[pt]": "Este 'plugin' integra o Heaptrack com o KDevelop", 
+        "Description[sv]": "Insticksprogrammet integrerar Heaptrack i KDevelop", 
+        "Description[uk]": "За допомогою цього додатка можна інтегрувати Heaptrack до KDevelop", 
+        "Description[x-test]": "xxThis plugin integrates Heaptrack to KDevelopxx", 
+        "Icon": "office-chart-area", 
+        "Id": "kdevheaptrack", 
+        "License": "GPL", 
+        "Name": "Heaptrack Support", 
+        "Name[ca]": "Implementació del Heaptrack", 
+        "Name[cs]": "Podpora Heaptracku", 
+        "Name[de]": "Heaptrack-Unterstützung", 
+        "Name[it]": "Supporto per Heaptrack", 
+        "Name[nl]": "Ondersteuning van Heaptrack", 
+        "Name[pt]": "Suporte para o Heaptrack", 
+        "Name[sv]": "Heaptrack-stöd", 
+        "Name[uk]": "Підтримка Heaptrack", 
+        "Name[x-test]": "xxHeaptrack Supportxx", 
         "ServiceTypes": [
             "KDevelop/Plugin"
-        ],
-
-        "Name": "Heaptrack Support",
-        "Name[x-test]": "xxHeaptrack Supportxx",
-
-        "Description": "This plugin integrates Heaptrack to KDevelop",
-        "Description[x-test]": "xxThis plugin integrates Heaptrack to KDevelopkxx"
-    },
-
-    "X-KDevelop-Category": "Global",
-    "X-KDevelop-Mode": "GUI",
+        ]
+    }, 
+    "X-KDevelop-Category": "Global", 
     "X-KDevelop-IRequired": [
         "org.kdevelop.IExecutePlugin"
-    ]
+    ], 
+    "X-KDevelop-Mode": "GUI"
 }

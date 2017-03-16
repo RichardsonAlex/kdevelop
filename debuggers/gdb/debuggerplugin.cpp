@@ -44,7 +44,6 @@
 
 using namespace KDevMI::GDB;
 
-
 K_PLUGIN_FACTORY_WITH_JSON(CppDebuggerFactory, "kdevgdb.json", registerPlugin<CppDebuggerPlugin>(); )
 
 CppDebuggerPlugin::CppDebuggerPlugin(QObject *parent, const QVariantList &)

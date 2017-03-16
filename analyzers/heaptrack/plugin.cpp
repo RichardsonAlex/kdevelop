@@ -40,6 +40,7 @@
 #include <shell/runcontroller.h>
 #include <util/executecompositejob.h>
 
+#include <QAction>
 #include <QFile>
 
 K_PLUGIN_FACTORY_WITH_JSON(HeaptrackFactory, "kdevheaptrack.json", registerPlugin<Heaptrack::Plugin>();)
@@ -50,7 +51,6 @@ namespace Heaptrack
 Plugin::Plugin(QObject* parent, const QVariantList&)
     : IPlugin(QStringLiteral("kdevheaptrack"), parent)
 {
-    setComponentName(QStringLiteral("kdevheaptrack"), i18n("Heaptrack Analyzer"));
     setXMLFile(QStringLiteral("kdevheaptrack.rc"));
 
     m_launchAction = new QAction(
@@ -79,7 +79,9 @@ Plugin::~Plugin()
 void Plugin::launchHeaptrack()
 {
     auto runController = KDevelop::Core::self()->runControllerInternal();
-    Q_ASSERT(runController);
+    if (runController->launchConfigurations().isEmpty()) {
+        runController->showConfigurationDialog();
+    }
 
     auto defaultLaunch = runController->defaultLaunch();
     if (!defaultLaunch) {
